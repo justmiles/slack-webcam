@@ -3,6 +3,26 @@ Turn your Slack avatar into an IP camera
 
 ## Installation
 
+This package requires OpenCV version 3.4 be installed on your system, along with GoCV, which is the Go programming language wrapper used by Gobot. The best way is to follow the installation instructions on the GoCV website at https://gocv.io.
+
+- ### macOS
+  To install OpenCV on macOS follow the instructions here:
+
+  https://gocv.io/getting-started/macos/
+
+- ### Ubuntu
+  To install on Ubuntu follow the instructions here:
+
+  https://gocv.io/getting-started/linux/
+
+- ### Windows
+  To install on Windows follow the instructions here:
+
+  https://gocv.io/getting-started/windows/
+
+
+Now you can install the slack-webcam binary
+
     sudo curl -L https://github.com/justmiles/slack-webcam/releases/download/v0.0.1/slack-webcam.linux-amd64 -o /usr/local/bin/slack-webcam
     sudo chmod +x /usr/local/bin/slack-webcam
 
