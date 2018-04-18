@@ -8,3 +8,4 @@ Turn your Slack avatar into an IP camera
 
 If you have more than one camera on your machine, you can reference the device's index using the `-device` flag. This defaults to `0`.
 
+Currently, this uploads one image and exits. It's up to you to determine how often it runs.
