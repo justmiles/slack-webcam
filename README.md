@@ -7,6 +7,15 @@ Turn your Slack avatar into an IP camera
     sudo chmod +x /usr/local/bin/slack-webcam
 
 ## Usage
+
+    Usage of slack-webcam:
+      -debug
+        	enable debug logging
+      -device string
+        	camera device index
+      -token string
+        	slack token for auth
+          
 [Generate a Slack token](https://api.slack.com/custom-integrations/legacy-tokens) for your personal user and pass that to slack-webcam
 
     slack-webcam -token "XYXYXYX"
