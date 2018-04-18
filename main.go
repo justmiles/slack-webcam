@@ -80,7 +80,13 @@ func main() {
 		debug("successfully uploaded")
 	} else {
 		if slackResp.Error != "" {
-			fmt.Println(slackResp.Error)
+
+			switch slackResp.Error {
+			case "invalid_auth":
+				fmt.Println("invalid token provided")
+			default:
+				fmt.Println(slackResp.Error)
+			}
 		} else {
 			fmt.Println("an unknown error occurred when communicating with the Slack API")
 		}
