@@ -3,7 +3,7 @@ Turn your Slack avatar into an IP camera
 
 ## Installation
 
-This package requires OpenCV version 3.4 be installed on your system, along with GoCV, which is the Go programming language wrapper used by Gobot. The best way is to follow the installation instructions on the GoCV website at https://gocv.io.
+This package requires OpenCV version 3.4 be installed on your system, along with GoCV, which is the Go programming language wrapper used by slack-webcam. The best way is to follow the installation instructions on the GoCV website at https://gocv.io.
 
 - ### macOS
   To install OpenCV on macOS follow the instructions here:
