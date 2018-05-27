@@ -10,15 +10,16 @@ Turn your Slack avatar into an IP camera
         	camera device index
       -token string
         	slack token for auth
-          
+
 [Generate a Slack token](https://api.slack.com/custom-integrations/legacy-tokens) for your personal user and pass that to slack-webcam
 
     slack-webcam -token "XYXYXYX"
 
 If you have more than one camera on your machine, you can reference the device's index using the `-device` flag. This defaults to `0`.
 
-Currently, this uploads one image and exits. It's up to you to determine how often it runs.
+Currently, this uploads one image and exits. It's up to you to determine how often it runs. Here's an example for running it via cron every 5 minutes, Monday-Friday, between 8AM and 5PM.
 
+    */5 8-17 * * 1-5 docker run --rm --privileged --device /dev/video0 justmiles/slack-webcam -token "xoxp-000000000000-000000000000-000000000000-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" 2>/dev/null
 
 ## Running in Docker
 Kicking it off using a pre-built docker image will save you having to compile GoCV yourself (below).
