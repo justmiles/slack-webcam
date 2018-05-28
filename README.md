@@ -9,7 +9,7 @@ Turn your Slack avatar into an IP camera
       -device string
         	camera device index
       -token string
-        	slack token for auth
+        	slack token for auth. Repeat for each Slack account you want to update
 
 [Generate a Slack token](https://api.slack.com/custom-integrations/legacy-tokens) for your personal user and pass that to slack-webcam
 
@@ -29,6 +29,7 @@ Kicking it off using a pre-built docker image will save you having to compile Go
       --privileged \
       --device /dev/video0 \
       justmiles/slack-webcam \
+        -token "xoxp-000000000000-000000000000-000000000000-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
         -token "xoxp-000000000000-000000000000-000000000000-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 
 ## Installation
