@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"sync"
 
 	"gocv.io/x/gocv"
 )
@@ -18,6 +19,7 @@ var (
 	devicePtr = flag.String("device", "0", "camera device index")
 	debugPtr  = flag.Bool("debug", false, "enable debug logging")
 	slackResp SlackResponse
+	wg        sync.WaitGroup
 )
 
 type tokensFlag []string
@@ -63,54 +65,59 @@ func main() {
 
 	buf, err := gocv.IMEncode(".jpg", img)
 	webcam.Close()
-	// Upload image
+
+	wg.Add(len(tokens))
 	for i, token := range tokens {
 		debug(fmt.Sprintf("token %d of %d: uploading image to Slack", i+1, len(tokens)))
-
-		bodyBuf := &bytes.Buffer{}
-		bodyWriter := multipart.NewWriter(bodyBuf)
-
-		bodyWriter.WriteField("token", token)
-
-		fileWriter, err := bodyWriter.CreateFormFile("image", "avatar.jpg")
-		check(err)
-
-		contentType := bodyWriter.FormDataContentType()
-		_, err = fileWriter.Write(buf)
-		check(err)
-
-		bodyWriter.Close()
-
-		resp, err := http.Post("https://slack.com/api/users.setPhoto", contentType, bodyBuf)
-		check(err)
-
-		defer resp.Body.Close()
-		resp_body, err := ioutil.ReadAll(resp.Body)
-		check(err)
-		debug(fmt.Sprintf("token %d of %d: %s", i+1, len(tokens), resp.Status))
-		err = json.Unmarshal(resp_body, &slackResp)
-		check(err)
-		if slackResp.Ok {
-			debug(fmt.Sprintf("token %d of %d: successfully uploaded", i+1, len(tokens)))
-		} else {
-			if slackResp.Error != "" {
-
-				switch slackResp.Error {
-				case "invalid_auth":
-					fmt.Println(fmt.Sprintf("token %d of %d: invalid authentication token provided", i+1, len(tokens)))
-				case "not_authed":
-					fmt.Println(fmt.Sprintf("token %d of %d: no authentication token provided", i+1, len(tokens)))
-				default:
-					fmt.Println(slackResp.Error)
-				}
-			} else {
-				fmt.Println(fmt.Sprintf("token %d of %d: an unknown error occurred while communicating with the Slack API", i+1, len(tokens)))
-			}
-			os.Exit(1)
-		}
-
+		go uploadToSlack(buf, token, i)
 	}
 
+	wg.Wait()
+
+}
+
+func uploadToSlack(buf []byte, token string, i int) {
+	defer wg.Done()
+	bodyBuf := &bytes.Buffer{}
+	bodyWriter := multipart.NewWriter(bodyBuf)
+
+	bodyWriter.WriteField("token", token)
+
+	fileWriter, err := bodyWriter.CreateFormFile("image", "avatar.jpg")
+	check(err)
+
+	contentType := bodyWriter.FormDataContentType()
+	_, err = fileWriter.Write(buf)
+	check(err)
+
+	bodyWriter.Close()
+
+	resp, err := http.Post("https://slack.com/api/users.setPhoto", contentType, bodyBuf)
+	check(err)
+
+	defer resp.Body.Close()
+	resp_body, err := ioutil.ReadAll(resp.Body)
+	check(err)
+
+	debug(fmt.Sprintf("token %d of %d: %s", i+1, len(tokens), resp.Status))
+	err = json.Unmarshal(resp_body, &slackResp)
+	check(err)
+
+	if slackResp.Ok {
+		debug(fmt.Sprintf("token %d of %d: successfully uploaded", i+1, len(tokens)))
+	} else {
+		switch slackResp.Error {
+		case "invalid_auth":
+			fmt.Printf("token %d of %d: invalid authentication token provided", i+1, len(tokens))
+			defer os.Exit(1)
+		case "not_authed":
+			fmt.Printf("token %d of %d: no authentication token provided", i+1, len(tokens))
+			defer os.Exit(1)
+		default:
+			fmt.Printf("token %d of %d: an unknown error occurred while communicating with the Slack API", i+1, len(tokens))
+			defer os.Exit(1)
+		}
+	}
 }
 
 func check(err error) {
